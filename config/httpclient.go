@@ -3,6 +3,7 @@ package config
 import (
 	"net/http"
 	"net/http/cookiejar"
+	"strings"
 	"time"
 
 	"golang.org/x/net/publicsuffix"
@@ -72,7 +73,7 @@ func (cs *transport) RoundTrip(r *http.Request) (*http.Response, error) {
 		userAgent = `clair/v4`
 	)
 	r.Header.Set("user-agent", userAgent)
-	if cs.Signer != nil {
+	if cs.Signer != nil && !strings.HasPrefix(r.URL.Host, "objectstore-") {
 		// TODO(hank) Make this mint longer-lived tokens and re-use them, only
 		// refreshing when needed. Like a resettable sync.Once.
 		now := time.Now()
